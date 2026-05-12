@@ -34,29 +34,35 @@ function normalizar(texto) {
     .toLowerCase()
     .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
     .replace(/\s+/g, "_")
+    .replace(/[^a-z0-9_]/g, "")
     .trim();
 }
 
 function parseCSV(texto) {
-  const linhas = texto.split("\n").map(l => l.trim()).filter(l => l);
+  const linhas = texto
+    .split("\n")
+    .map(l => l.trim())
+    .filter(l => l);
 
-  // 🔍 Encontrar a linha do cabeçalho real
+  // 🔎 Encontrar o cabeçalho REAL pelo conteúdo
   const indexCabecalho = linhas.findIndex(l =>
-    l.toLowerCase().startsWith("nº;ua;cie;nome")
+    l.includes("Nome da Unidade Escolar") &&
+    l.includes("END COMPLETO") &&
+    l.includes("Bairro")
   );
 
   if (indexCabecalho === -1) {
-    console.error("Cabeçalho do CSV não encontrado");
+    console.error("Cabeçalho real não encontrado no CSV");
+    console.error(linhas.slice(0, 20)); // ajuda debug
     return [];
   }
 
   const cabecalhoOriginal = linhas[indexCabecalho].split(";");
   const cabecalho = cabecalhoOriginal.map(c => normalizar(c));
 
-  // 🔽 Linhas de dados vêm depois do cabeçalho
   const dados = linhas.slice(indexCabecalho + 1);
 
-  return dados.map(linha => {
+  return dados.map((linha, idx) => {
     const valores = linha.split(";");
     let obj = {};
 
@@ -65,8 +71,11 @@ function parseCSV(texto) {
     });
 
     return obj;
-  });
+  }).filter(e =>
+    e.nome_da_unidade_escolar || e.end_completo
+  );
 }
+
 
 /* ===============================
    MUNICÍPIOS
