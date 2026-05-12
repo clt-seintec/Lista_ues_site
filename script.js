@@ -29,16 +29,41 @@ fetch("escolas_estaduais 2026(MENU FILTRAR).csv")
 /* ===============================
    PARSER DE CSV (;)
 ================================ */
-function parseCSV(texto) {
-  const linhas = texto.split("\n").filter(l => l.trim());
-  const cabecalho = linhas[0].split(";").map(c => c.trim());
+function normalizar(texto) {
+  return texto
+    .toLowerCase()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/\s+/g, "_")
+    .trim();
+}
 
-  return linhas.slice(1).map(linha => {
+function parseCSV(texto) {
+  const linhas = texto.split("\n").map(l => l.trim()).filter(l => l);
+
+  // 🔍 Encontrar a linha do cabeçalho real
+  const indexCabecalho = linhas.findIndex(l =>
+    l.toLowerCase().startsWith("nº;ua;cie;nome")
+  );
+
+  if (indexCabecalho === -1) {
+    console.error("Cabeçalho do CSV não encontrado");
+    return [];
+  }
+
+  const cabecalhoOriginal = linhas[indexCabecalho].split(";");
+  const cabecalho = cabecalhoOriginal.map(c => normalizar(c));
+
+  // 🔽 Linhas de dados vêm depois do cabeçalho
+  const dados = linhas.slice(indexCabecalho + 1);
+
+  return dados.map(linha => {
     const valores = linha.split(";");
     let obj = {};
+
     cabecalho.forEach((col, i) => {
       obj[col] = (valores[i] || "").trim();
     });
+
     return obj;
   });
 }
