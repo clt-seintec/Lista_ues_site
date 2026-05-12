@@ -14,38 +14,59 @@ const btnAlternar = document.getElementById("alternarView");
 let escolas = [];
 let modoTabela = false;
 
-/* =========================
-   Carrega CSV
-========================= */
+/* ===============================
+   CARREGAR CSV
+================================ */
 fetch("escolas_estaduais 2026(MENU FILTRAR).csv")
   .then(r => r.text())
-  .then(t => {
-    escolas = parseCSV(t);
+  .then(texto => {
+    escolas = parseCSV(texto);
     preencherMunicipios();
     renderizar();
   });
 
+/* ===============================
+   PARSER DE CSV (;)
+================================ */
 function parseCSV(texto) {
   const linhas = texto.split("\n").filter(l => l.trim());
-  const head = linhas[0].split(";");
-  return linhas.slice(1).map(l => {
+  const cabecalho = linhas[0].split(";").map(c => c.trim());
+
+  return linhas.slice(1).map(linha => {
+    const valores = linha.split(";");
     let obj = {};
-    l.split(";").forEach((v, i) => obj[head[i]] = v?.trim() || "");
+    cabecalho.forEach((col, i) => {
+      obj[col] = (valores[i] || "").trim();
+    });
     return obj;
   });
 }
 
+/* ===============================
+   MUNICÍPIOS
+================================ */
 function preencherMunicipios() {
   const set = new Set();
   escolas.forEach(e => {
-    if (e["END COMPLETO"]?.toUpperCase().includes("CAMPINAS")) set.add("Campinas");
-    if (e["END COMPLETO"]?.toUpperCase().includes("JAGUARIUNA")) set.add("Jaguariúna");
+    if (e["END COMPLETO"]) {
+      if (e["END COMPLETO"].toUpperCase().includes("CAMPINAS")) set.add("Campinas");
+      if (e["END COMPLETO"].toUpperCase().includes("JAGUARIUNA")) set.add("Jaguariúna");
+    }
   });
-  set.forEach(m => filtroMunicipio.innerHTML += `<option>${m}</option>`);
+
+  set.forEach(m => {
+    const opt = document.createElement("option");
+    opt.value = m;
+    opt.textContent = m;
+    filtroMunicipio.appendChild(opt);
+  });
 }
 
-[filtroMunicipio, filtroEnsino, buscaInput].forEach(e =>
-  e.addEventListener("input", renderizar)
+/* ===============================
+   EVENTOS
+================================ */
+[filtroMunicipio, filtroEnsino, buscaInput].forEach(el =>
+  el.addEventListener("input", renderizar)
 );
 
 btnLimpar.onclick = () => {
@@ -63,61 +84,71 @@ btnAlternar.onclick = () => {
   renderizar();
 };
 
-btnExportar.onclick = () => {
-  let csv = "Escola;Endereço;Telefone;Modalidades\n";
-  escolasFiltradas.forEach(e => {
-    csv += `"${e["Nome da Unidade Escolar"]}";"${e["END COMPLETO"]}"\n`;
-  });
-  baixar(csv);
-};
-
-let escolasFiltradas = [];
-
+/* ===============================
+   RENDERIZAR
+================================ */
 function renderizar() {
   resultado.innerHTML = "";
   tbody.innerHTML = "";
 
-  escolasFiltradas = escolas.filter(e => {
+  const filtradas = escolas.filter(e => {
     if (filtroMunicipio.value && !e["END COMPLETO"].toUpperCase().includes(filtroMunicipio.value.toUpperCase())) return false;
-    if (filtroEnsino.value && !Object.values(e).some(v => v.includes(filtroEnsino.value))) return false;
-    if (buscaInput.value && !e["Nome da Unidade Escolar"].toLowerCase().includes(buscaInput.value.toLowerCase()) && !e["Bairro"].toLowerCase().includes(buscaInput.value.toLowerCase())) return false;
+    if (filtroEnsino.value && !Object.values(e).some(v => v.toUpperCase().includes(filtroEnsino.value))) return false;
+    if (buscaInput.value) {
+      const b = buscaInput.value.toLowerCase();
+      if (
+        !e["Nome da Unidade Escolar"]?.toLowerCase().includes(b) &&
+        !e["Bairro"]?.toLowerCase().includes(b)
+      ) return false;
+    }
     return true;
   });
 
-  contador.textContent = `${escolasFiltradas.length} escolas encontradas`;
+  contador.textContent = `${filtradas.length} escolas encontradas`;
 
-  escolasFiltradas.forEach(e => {
-    const mapa = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(e["END COMPLETO"])}`;
-    const modalidades = ["ANOS INICIAIS","ANOS FINAIS","ENSINO MEDIO","EJA","NOVOTEC","ITINERARIO FORMATIVO"]
-      .filter(c => e[c] && e[c] !== "--------")
-      .map(c => `<span class="badge">${c}</span>`)
-      .join(" ");
+  filtradas.forEach(e => {
+    const nome = e["Nome da Unidade Escolar"] || "Sem nome";
+    const endereco = e["END COMPLETO"] || "Endereço não informado";
+    const telefone = `${e["telefone 1 "] || ""} ${e["telefone 2"] || ""}`.trim();
+
+    const modalidades = extrairModalidades(e).join(" ");
+
+    const linkMapa =
+      `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(endereco)}`;
 
     if (!modoTabela) {
       resultado.innerHTML += `
         <div class="card">
-          <h3>${e["Nome da Unidade Escolar"]}</h3>
-          <p>${e["END COMPLETO"]}</p>
+          <h3>${nome}</h3>
+          <p>${endereco}</p>
+          <p>${telefone}</p>
           <p>${modalidades}</p>
-          ${mapa}📍 Ver no Google Maps</a>
+          <a href="${linkMapa}" target="_blank">📍 Ver no Google Maps</a>
         </div>`;
     } else {
       tbody.innerHTML += `
         <tr>
-          <td>${e["Nome da Unidade Escolar"]}</td>
-          <td>${e["END COMPLETO"]}</td>
-          <td>${e["telefone 1"]}</td>
+          <td>${nome}</td>
+          <td>${endereco}</td>
+          <td>${telefone}</td>
           <td>${modalidades}</td>
-          <td>${mapa}Mapa</a></td>
+          <td><a href="${linkMapa}" target="_blank">Mapa</a></td>
         </tr>`;
     }
   });
 }
 
-function baixar(conteudo) {
-  const blob = new Blob([conteudo], { type: "text/csv" });
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "escolas_filtradas.csv";
-  a.click();
+/* ===============================
+   EXTRAIR MODALIDADES PELO TEXTO
+================================ */
+function extrairModalidades(e) {
+  const mapa = [
+    "EF AI", "EF AF", "ENSINO MEDIO", "EM",
+    "EJA", "PEI", "NOVOTEC", "ITI", "ITINERARIO"
+  ];
+
+  const texto = Object.values(e).join(" ").toUpperCase();
+  return mapa
+    .filter(m => texto.includes(m))
+    .map(m => `<span class="badge">${m}</span>`);
 }
