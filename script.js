@@ -21,6 +21,7 @@ fetch("escolas_estaduais 2026(MENU FILTRAR).csv")
   .then(r => r.text())
   .then(texto => {
     escolas = parseCSV(texto);
+    console.log(escolas[0]); // 👈 INSPEÇÃO
     preencherMunicipios();
     renderizar();
   });
