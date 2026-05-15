@@ -5,81 +5,40 @@
   <title>Painel de Escolas Estaduais – SEDUC-SP</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- ✅ CSS corretamente incluído -->
   <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <header>
-  <!-- ✅ Logo como imagem -->
-  <img
-    src="https://www.educacao.sp.gov.br/wp-content/uploads/2023/03/logo-seduc.png"
-    alt="SEDUC-SP"
-    class="logo"
-  >
-
+  <img src="https://www.educacao.sp.gov.br/wp-content/uploads/2023/03/logo-seduc.png" alt="SEDUC-SP">
   <h1>Painel de Escolas Estaduais</h1>
   <p>Diretoria de Ensino – Campinas Leste</p>
 </header>
 
 <section class="filtros">
-  <div>
-    <label>Município</label>
-    <select id="municipio">
-      <option value="">Todos</option>
-    </select>
-  </div>
+  <label>Município</label>
+  <select id="municipio">
+    <option value="">Todos</option>
+  </select>
 
-  <div>
-    <label>Modalidade</label>
-    <select id="ensino">
-      <option value="">Todas</option>
-      <option value="ANOS INICIAIS">Anos Iniciais</option>
-      <option value="ANOS FINAIS">Anos Finais</option>
-      <option value="ENSINO MEDIO">Ensino Médio</option>
-      <option value="EJA">EJA</option>
-      <option value="PEI">PEI</option>
-      <option value="NOVOTEC">NOVOTEC</option>
-      <option value="ITINERARIO">Itinerário</option>
-    </select>
-  </div>
-
-  <div>
-    <label>Busca</label>
-    <input type="text" id="busca" placeholder="Escola ou bairro">
-  </div>
+  <label>Buscar</label>
+  <input type="text" id="busca" placeholder="Nome ou bairro">
 </section>
 
 <section class="acoes">
   <span id="contador">0 escolas</span>
   <div>
     <button id="limpar">Limpar</button>
-    <button id="exportar">Exportar CSV</button>
-    <button id="alternarView">Tabela</button>
   </div>
 </section>
 
 <section id="resultado" class="cards"></section>
 
-<table id="tabela" class="tabela hidden">
-  <thead>
-    <tr>
-      <th>Escola</th>
-      <th>Endereço</th>
-      <th>Telefones</th>
-      <th>Modalidades</th>
-      <th>Mapa</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
-
 <footer>
   © SEDUC‑SP – Diretoria de Ensino Campinas Leste
 </footer>
 
-<!-- ✅ JS corretamente incluído -->
 <script src="script.js"></script>
 
 </body>
