@@ -2,43 +2,48 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Painel de Escolas Estaduais – SEDUC-SP</title>
+  <title>Painel de Escolas Estaduais</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="style.css">
+
+  <!-- LEAFLET CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
 </head>
 
 <body>
 
 <header>
-  <img src="https://www.educacao.sp.gov.br/wp-content/uploads/2023/03/logo-seduc.png" alt="SEDUC-SP">
+  <img src="https://www.educacao.sp.gov.br/wp-content/uploads/2023/03/logo-seduc.png">
   <h1>Painel de Escolas Estaduais</h1>
-  <p>Diretoria de Ensino – Campinas Leste</p>
 </header>
 
 <section class="filtros">
-  <label>Município</label>
   <select id="municipio">
-    <option value="">Todos</option>
+    <option value="">Município</option>
   </select>
 
-  <label>Buscar</label>
-  <input type="text" id="busca" placeholder="Nome ou bairro">
+  <select id="tipo">
+    <option value="">Tipo</option>
+    <option value="PEI">PEI</option>
+    <option value="REGULAR">REGULAR</option>
+  </select>
+
+  <input type="text" id="busca" placeholder="Buscar escola ou bairro">
 </section>
 
 <section class="acoes">
-  <span id="contador">0 escolas</span>
-  <div>
-    <button id="limpar">Limpar</button>
-  </div>
+  <span id="contador"></span>
+  <button id="limpar">Limpar</button>
+  <button id="exportar">Exportar</button>
 </section>
 
 <section id="resultado" class="cards"></section>
 
-<footer>
-  © SEDUC‑SP – Diretoria de Ensino Campinas Leste
-</footer>
+<h2>Mapa das Escolas</h2>
+<div id="mapa"></div>
 
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
 <script src="script.js"></script>
 
 </body>
