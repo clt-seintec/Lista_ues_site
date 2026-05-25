@@ -1,50 +1,131 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Painel de Escolas Estaduais</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 
-  <!-- LEAFLET CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+  <!-- Leaflet (mapa) -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+    crossorigin=""
+  />
+
+  <!-- MarkerCluster -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css"
+  />
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css"
+  />
 </head>
-
 <body>
 
-<header>
-  <img src="https://www.educacao.sp.gov.br/wp-content/uploads/2023/03/logo-seduc.png">
-  <h1>Painel de Escolas Estaduais</h1>
-</header>
+  <header class="topo">
+    <div class="topo-conteudo">
+      <img
+        class="logo-topo"
+        src="LOGO%20NOVO%20URE%20%20-%20TRANSPARENTE.png"
+        alt="Logo URE"
+      />
+      <div class="topo-texto">
+        <h1>Painel de Escolas Estaduais</h1>
+        <p>Consulta pública das unidades escolares</p>
+      </div>
+    </div>
+  </header>
 
-<section class="filtros">
-  <select id="municipio">
-    <option value="">Município</option>
-  </select>
+  <main class="container">
+    <section class="filtros" aria-label="Filtros da página">
+      <div class="campo">
+        <label for="municipio">Município</label>
+        <select id="municipio">
+          <option value="">Todos</option>
+        </select>
+      </div>
 
-  <select id="tipo">
-    <option value="">Tipo</option>
-    <option value="PEI">PEI</option>
-    <option value="REGULAR">REGULAR</option>
-  </select>
+      <div class="campo">
+        <label for="tipo">Tipo</label>
+        <select id="tipo">
+          <option value="">Todos</option>
+        </select>
+      </div>
 
-  <input type="text" id="busca" placeholder="Buscar escola ou bairro">
-</section>
+      <div class="campo campo-busca">
+        <label for="busca">Buscar</label>
+        <input
+          type="text"
+          id="busca"
+          placeholder="Nome da escola ou bairro"
+          autocomplete="off"
+        />
+      </div>
+    </section>
 
-<section class="acoes">
-  <span id="contador"></span>
-  <button id="limpar">Limpar</button>
-  <button id="exportar">Exportar</button>
-</section>
+    <section class="acoes" aria-label="Ações da página">
+      <div class="acoes-esquerda">
+        <span id="contador">0 escolas encontradas</span>
+      </div>
 
-<section id="resultado" class="cards"></section>
+      <div class="acoes-direita">
+        <button id="btnLista" type="button">Lista</button>
+        <button id="btnLimpar" type="button">Limpar</button>
+        <button id="btnExportar" type="button">Exportar</button>
+      </div>
+    </section>
 
-<h2>Mapa das Escolas</h2>
-<div id="mapa"></div>
+    <section id="resultadoCards" class="cards" aria-label="Resultado em cards"></section>
 
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="script.js"></script>
+    <section id="resultadoListaWrapper" class="lista-wrapper hidden" aria-label="Resultado em lista">
+      <div class="tabela-container">
+        <table id="resultadoLista">
+          <thead>
+            <tr>
+              <th>Nome da escola</th>
+              <th>CIE</th>
+              <th>Telefone 1</th>
+              <th>Telefone 2</th>
+              <th>Tipo</th>
+              <th>Endereço</th>
+              <th>Link</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
 
+    <section class="mapa-section">
+      <div class="mapa-titulo">
+        <h2>Mapa das escolas</h2>
+        <p id="mapaStatus" class="mapa-status">
+          O mapa com cluster será exibido automaticamente se o CSV tiver colunas de latitude e longitude.
+        </p>
+      </div>
+      <div id="mapa" class="hidden" aria-label="Mapa das escolas"></div>
+    </section>
+  </main>
+
+  <footer class="rodape">
+    <p>© Painel de Escolas Estaduais</p>
+  </footer>
+
+  <!-- Leaflet -->
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+  ></script>
+
+  <!-- MarkerCluster -->
+  <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
+
+  <script src="script.js"></script>
 </body>
 </html>
