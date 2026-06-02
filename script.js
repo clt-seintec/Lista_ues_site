@@ -494,11 +494,10 @@ function inicializarMapaSePossivel() {
   const temLongitude = "longitude" in primeira || "Longitude" in primeira;
 
   if (!temLatitude || !temLongitude) {
-    mapaEl.classList.add("hidden");
-    mapaStatus.textContent =
-      "Mapa desativado: para exibir todos os pontos com cluster, inclua as colunas latitude e longitude no CSV.";
-    return;
-  }
+  document.querySelector(".mapa-section").classList.add("hidden");
+  return;
+}
+
 
   mapaEl.classList.remove("hidden");
   mapaStatus.textContent =
